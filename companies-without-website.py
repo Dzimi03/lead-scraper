@@ -81,7 +81,7 @@ def main():
     current_url = base_url
 
     while current_url:
-        print(f"🔍 Processing: {current_url}")
+        print(f"Processing: {current_url}")
         next_url = process_page(current_url, category)
         if next_url:
             current_url = next_url
