@@ -39,7 +39,7 @@ def calculate_website_score(data):
             "SEO": 0,
             "Accessibility": 0,
             "Best Practices": 0,
-            "User Experience": 50,  # Default to 50 if no data
+            "User Experience": 50,
             "FCP": 0,
             "LCP": 0,
             "CLS": 0,
@@ -62,7 +62,7 @@ def calculate_website_score(data):
         user_experience_category = data["loadingExperience"].get("overall_category", "N/A")
         user_experience_score = {"FAST": 100, "AVERAGE": 50, "SLOW": 20}.get(user_experience_category, 50)
     else:
-        user_experience_score = 50  # Fallback if no data available for user experience
+        user_experience_score = 50
 
     fcp = audits.get("first-contentful-paint", {}).get("numericValue", 0)
     lcp = audits.get("largest-contentful-paint", {}).get("numericValue", 0)
@@ -164,7 +164,7 @@ def process_page(url, category):
         website = data.get("sameAs", None)
 
         if website:
-            # Get the website score data from Google Pagespeed API
+
             pagespeed_data = get_pagespeed_data(website, api_key)
             if pagespeed_data:
                 score_details = calculate_website_score(pagespeed_data)
@@ -183,7 +183,7 @@ def process_page(url, category):
                 print(f"User Experience: {score_details['User Experience']}")
                 print("-" * 50)
 
-        # Process pagination
+
     next_page_tag = doc.select_one(".pagination-next a")
     return next_page_tag["href"] if next_page_tag else None
 

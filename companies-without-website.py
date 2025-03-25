@@ -20,7 +20,7 @@ c.execute("""
         email TEXT,
         strona_internetowa TEXT,
         kategoria TEXT,
-        PRIMARY KEY (nazwa, kategoria)  -- Zapobiega duplikatom firm w tej samej kategorii
+        PRIMARY KEY (nazwa, kategoria) 
     )
 """)
 conn.commit()
