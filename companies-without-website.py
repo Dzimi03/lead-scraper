@@ -10,11 +10,9 @@ headers_list = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/89.0.4389.82 Safari/537.36",
 ]
 
-# Połączenie z bazą danych
 conn = sqlite3.connect("firmy.db")
 c = conn.cursor()
 
-# Tworzenie tabeli (jeśli nie istnieje)
 c.execute("""
     CREATE TABLE IF NOT EXISTS firmy (
         nazwa TEXT,
@@ -29,7 +27,6 @@ conn.commit()
 
 
 def company_exists(name, category):
-    """Sprawdza, czy firma już istnieje w danej kategorii"""
     c.execute("SELECT 1 FROM firmy WHERE nazwa = ? AND kategoria = ?", (name, category))
     return c.fetchone() is not None
 
@@ -42,17 +39,16 @@ def add_company(name, telephone, email, website, category):
             VALUES (?, ?, ?, ?, ?)
         """, (name, telephone, email, website, category))
         conn.commit()
-        print(f"✅ Added: {name} (Category: {category}, No website)")
+        print(f" Added: {name} (Category: {category}, No website)")
     else:
-        print(f"⚠️ Skipping {name} (already in database under category: {category})")
+        print(f" Skipping {name} (already in database under category: {category})")
 
 
 def process_page(url, category):
-    """Przetwarza stronę z wynikami firm w danej kategorii"""
     headers = {"User-Agent": random.choice(headers_list)}
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
-        print(f"❌ Error fetching page {url}: {response.status_code}")
+        print(f" Error fetching page {url}: {response.status_code}")
         return None
 
     doc = BeautifulSoup(response.text, "html.parser")
@@ -66,11 +62,11 @@ def process_page(url, category):
             email = data.get("email", "N/A")
             website = data.get("sameAs")
 
-            # Warunek: dodajemy tylko firmy bez strony internetowej
+
             if name and not website:
                 add_company(name, telephone, email, None, category)
 
-            time.sleep(1)  # Opóźnienie, by uniknąć blokady IP
+            time.sleep(1)
         except (json.JSONDecodeError, TypeError):
             continue
 
@@ -80,19 +76,19 @@ def process_page(url, category):
 
 def main():
     category = input("Enter category to search (e.g., hydraulik, serwis AGD): ").strip()
-    encoded_category = category.replace(" ", "%20")  # Kodowanie do URL tylko dla wyszukiwania
+    encoded_category = category.replace(" ", "%20")
     base_url = f"https://panoramafirm.pl/{encoded_category}"
     current_url = base_url
 
     while current_url:
         print(f"🔍 Processing: {current_url}")
-        next_url = process_page(current_url, category)  # Używamy oryginalnej kategorii do zapisu w bazie
+        next_url = process_page(current_url, category)
         if next_url:
             current_url = next_url
         else:
             break
 
-    print("✅ Scraping completed.")
+    print("Scraping completed.")
     conn.close()
 
 
